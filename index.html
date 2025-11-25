@@ -1,96 +1,172 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>My Animation</title>
+    <title>Taipei Love Story</title>
     <style>
+        /* THE ANIME STYLE CONFIGURATION */
+        :root {
+            --main-orange: #ff6b35; /* Matches your background */
+            --main-teal: #00c9a7;   /* Matches their jackets */
+            --text-color: white;
+        }
+
         body {
             margin: 0;
+            padding: 0;
+            background-color: var(--main-orange);
+            font-family: 'Courier New', Courier, monospace; /* Retro vibe */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
             overflow: hidden;
+        }
+
+        /* The "Video" Frame */
+        #video-container {
+            width: 100%;
+            max-width: 800px; /* Aspect ratio roughly like a video */
+            aspect-ratio: 16/9;
             background-color: black;
+            position: relative;
+            border: 5px solid white;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            overflow: hidden;
+            border-radius: 15px;
         }
-        canvas {
-            display: block;
+
+        /* The Image Slide */
+        .slide {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1.5s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
+
+        .slide img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Ensures image fills the screen */
+        }
+
+        .slide.active {
+            opacity: 1;
+        }
+
+        /* Subtitles / Lyrics style */
+        .subtitle-box {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 128, 128, 0.85); /* Teal background */
+            padding: 15px 30px;
+            border-radius: 30px;
+            border: 2px solid white;
+            text-align: center;
+            width: 70%;
+        }
+
+        .subtitle-text {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* Progress Bar to look like a video player */
+        .progress-bar {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            height: 5px;
+            background-color: var(--main-teal);
+            width: 0%; 
+            transition: width 0.5s linear;
+        }
+
     </style>
 </head>
 <body>
-    <canvas id="canvas"></canvas>
+
+    <div id="video-container">
+        <!-- SCENE 1: CAFE -->
+        <div class="slide active" id="slide1">
+            <!-- I used a placeholder image. You will replace this later! -->
+            <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop" alt="Cafe">
+            <div class="subtitle-box">
+                <div class="subtitle-text">Relaxing Brunch & Coffee</div>
+            </div>
+        </div>
+
+        <!-- SCENE 2: DIN TAI FUNG -->
+        <div class="slide" id="slide2">
+            <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=1000&auto=format&fit=crop" alt="Dim Sum">
+            <div class="subtitle-box">
+                <div class="subtitle-text">The Best Dim Sum!</div>
+            </div>
+        </div>
+
+        <!-- SCENE 3: NIGHT MARKET -->
+        <div class="slide" id="slide3">
+            <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=1000&auto=format&fit=crop" alt="Night Market">
+            <div class="subtitle-box">
+                <div class="subtitle-text">Fried Chicken & Bubble Tea</div>
+            </div>
+        </div>
+
+        <!-- SCENE 4: HAPPY COUPLE (Using a color placeholder for now) -->
+        <div class="slide" id="slide4">
+            <!-- This is where you put your Anime Couple Image -->
+            <div style="width:100%; height:100%; background-color: #00c9a7; display:flex; justify-content:center; align-items:center;">
+                <h1 style="color:white; font-size:50px;">❤️</h1>
+            </div>
+            <div class="subtitle-box">
+                <div class="subtitle-text">So Happy Travelling Together</div>
+            </div>
+        </div>
+
+        <div class="progress-bar" id="progress"></div>
+    </div>
 
     <script>
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
+        const slides = document.querySelectorAll('.slide');
+        const progressBar = document.getElementById('progress');
+        let currentSlide = 0;
+        const slideInterval = 4000; // 4 seconds per scene
 
-        let width, height;
-        let stars = [];
-        const numStars = 800;
-        const speed = 5;
-
-        function resize() {
-            width = window.innerWidth;
-            height = window.innerHeight;
-            canvas.width = width;
-            canvas.height = height;
-        }
-
-        class Star {
-            constructor() {
-                this.reset(true);
-            }
-
-            reset(initial) {
-                this.x = (Math.random() - 0.5) * width * 2;
-                this.y = (Math.random() - 0.5) * height * 2;
-                this.z = initial ? Math.random() * width : width;
-            }
-
-            update() {
-                this.z -= speed;
-                if (this.z <= 0) {
-                    this.reset(false);
-                }
-            }
-
-            draw() {
-                let x = (this.x / this.z) * width / 2 + width / 2;
-                let y = (this.y / this.z) * height / 2 + height / 2;
-                let size = (width - this.z) / width * 3;
-
-                // Create a tail effect
-                let oldX = (this.x / (this.z + speed * 2)) * width / 2 + width / 2;
-                let oldY = (this.y / (this.z + speed * 2)) * height / 2 + height / 2;
-
-                ctx.strokeStyle = 'white';
-                ctx.lineWidth = size;
-                ctx.beginPath();
-                ctx.moveTo(oldX, oldY);
-                ctx.lineTo(x, y);
-                ctx.stroke();
-            }
-        }
-
-        function init() {
-            resize();
-            stars = [];
-            for (let i = 0; i < numStars; i++) {
-                stars.push(new Star());
-            }
-            animate();
-        }
-
-        function animate() {
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; // Creates the trail effect
-            ctx.fillRect(0, 0, width, height);
+        function nextSlide() {
+            // Remove active class from current slide
+            slides[currentSlide].classList.remove('active');
             
-            stars.forEach(star => {
-                star.update();
-                star.draw();
-            });
+            // Calculate next slide index
+            currentSlide = (currentSlide + 1) % slides.length;
             
-            requestAnimationFrame(animate);
+            // Add active class to next slide
+            slides[currentSlide].classList.add('active');
+
+            // Reset progress bar logic (visual only)
+            progressBar.style.width = '0%';
+            setTimeout(() => {
+                progressBar.style.width = '100%';
+            }, 100);
         }
 
-        window.addEventListener('resize', resize);
-        init();
+        // Start the loop
+        setInterval(nextSlide, slideInterval);
+        
+        // Initial progress bar start
+        setTimeout(() => {
+            progressBar.style.width = '100%';
+        }, 100);
     </script>
+
 </body>
 </html>
