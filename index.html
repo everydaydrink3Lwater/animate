@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My Animation</title>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: black;
+        }
+        canvas {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas"></canvas>
+
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        let width, height;
+        let stars = [];
+        const numStars = 800;
+        const speed = 5;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+
+        class Star {
+            constructor() {
+                this.reset(true);
+            }
+
+            reset(initial) {
+                this.x = (Math.random() - 0.5) * width * 2;
+                this.y = (Math.random() - 0.5) * height * 2;
+                this.z = initial ? Math.random() * width : width;
+            }
+
+            update() {
+                this.z -= speed;
+                if (this.z <= 0) {
+                    this.reset(false);
+                }
+            }
+
+            draw() {
+                let x = (this.x / this.z) * width / 2 + width / 2;
+                let y = (this.y / this.z) * height / 2 + height / 2;
+                let size = (width - this.z) / width * 3;
+
+                // Create a tail effect
+                let oldX = (this.x / (this.z + speed * 2)) * width / 2 + width / 2;
+                let oldY = (this.y / (this.z + speed * 2)) * height / 2 + height / 2;
+
+                ctx.strokeStyle = 'white';
+                ctx.lineWidth = size;
+                ctx.beginPath();
+                ctx.moveTo(oldX, oldY);
+                ctx.lineTo(x, y);
+                ctx.stroke();
+            }
+        }
+
+        function init() {
+            resize();
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push(new Star());
+            }
+            animate();
+        }
+
+        function animate() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.3)'; // Creates the trail effect
+            ctx.fillRect(0, 0, width, height);
+            
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', resize);
+        init();
+    </script>
+</body>
+</html>
