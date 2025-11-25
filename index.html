@@ -1,172 +1,217 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Taipei Love Story</title>
+    <title>Taipei Vlog</title>
     <style>
-        /* THE ANIME STYLE CONFIGURATION */
-        :root {
-            --main-orange: #ff6b35; /* Matches your background */
-            --main-teal: #00c9a7;   /* Matches their jackets */
-            --text-color: white;
-        }
-
         body {
             margin: 0;
-            padding: 0;
-            background-color: var(--main-orange);
-            font-family: 'Courier New', Courier, monospace; /* Retro vibe */
+            background-color: #000;
+            overflow: hidden;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            overflow: hidden;
+            font-family: 'Arial', sans-serif;
         }
 
-        /* The "Video" Frame */
-        #video-container {
-            width: 100%;
-            max-width: 800px; /* Aspect ratio roughly like a video */
-            aspect-ratio: 16/9;
-            background-color: black;
+        /* THE MOVIE SCREEN */
+        #movie-screen {
             position: relative;
-            border: 5px solid white;
-            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            width: 100%;
+            height: 100vh;
             overflow: hidden;
-            border-radius: 15px;
         }
 
-        /* The Image Slide */
-        .slide {
+        /* ANIMATED SCENES */
+        .scene {
             position: absolute;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
             opacity: 0;
-            transition: opacity 1.5s ease-in-out;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            z-index: 1;
+            /* This ensures the image covers the whole screen */
+            background-size: cover; 
+            background-position: center;
+            transition: opacity 1s ease-in-out;
         }
 
-        .slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover; /* Ensures image fills the screen */
+        /* ANIMATION 1: Slow Zoom In */
+        @keyframes zoomIn {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.2); }
         }
 
-        .slide.active {
+        /* ANIMATION 2: Pan Right */
+        @keyframes panRight {
+            0% { transform: scale(1.1) translateX(-20px); }
+            100% { transform: scale(1.1) translateX(20px); }
+        }
+
+        /* ANIMATION 3: Zoom Out */
+        @keyframes zoomOut {
+            0% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        /* Apply animations when class is added */
+        .animate-zoom-in { animation: zoomIn 6s linear forwards; }
+        .animate-pan { animation: panRight 6s linear forwards; }
+        .animate-zoom-out { animation: zoomOut 6s linear forwards; }
+
+        .active {
             opacity: 1;
+            z-index: 2;
         }
 
-        /* Subtitles / Lyrics style */
-        .subtitle-box {
+        /* VLOG OVERLAY (The "REC" look) */
+        .overlay-ui {
             position: absolute;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 128, 128, 0.85); /* Teal background */
-            padding: 15px 30px;
-            border-radius: 30px;
-            border: 2px solid white;
-            text-align: center;
-            width: 70%;
-        }
-
-        .subtitle-text {
-            color: white;
-            font-size: 1.2rem;
+            top: 20px;
+            right: 30px;
+            z-index: 10;
+            color: red;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            animation: blink 1s infinite;
+        }
+        .dot {
+            width: 15px;
+            height: 15px;
+            background-color: red;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+        @keyframes blink {
+            50% { opacity: 0; }
         }
 
-        /* Progress Bar to look like a video player */
-        .progress-bar {
+        /* SUBTITLES */
+        .subtitle {
             position: absolute;
-            bottom: 0;
+            bottom: 50px;
             left: 0;
-            height: 5px;
-            background-color: var(--main-teal);
-            width: 0%; 
-            transition: width 0.5s linear;
+            width: 100%;
+            text-align: center;
+            z-index: 10;
+            color: white;
+            font-size: 28px;
+            text-shadow: 2px 2px 4px black;
+            font-weight: bold;
+            letter-spacing: 1px;
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
+            padding-bottom: 20px;
+            padding-top: 40px;
+        }
+
+        /* FLOATING HEARTS ANIMATION */
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 20px;
+            z-index: 5;
+            animation: floatUp 3s linear forwards;
+            opacity: 0;
+        }
+
+        @keyframes floatUp {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            100% { transform: translateY(-100vh) scale(1.5); opacity: 0; }
         }
 
     </style>
 </head>
 <body>
 
-    <div id="video-container">
-        <!-- SCENE 1: CAFE -->
-        <div class="slide active" id="slide1">
-            <!-- I used a placeholder image. You will replace this later! -->
-            <img src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=1000&auto=format&fit=crop" alt="Cafe">
-            <div class="subtitle-box">
-                <div class="subtitle-text">Relaxing Brunch & Coffee</div>
-            </div>
+    <div id="movie-screen">
+        <!-- UI Overlay -->
+        <div class="overlay-ui">
+            <div class="dot"></div> REC
         </div>
 
-        <!-- SCENE 2: DIN TAI FUNG -->
-        <div class="slide" id="slide2">
-            <img src="https://images.unsplash.com/photo-1563245372-f21724e3856d?q=80&w=1000&auto=format&fit=crop" alt="Dim Sum">
-            <div class="subtitle-box">
-                <div class="subtitle-text">The Best Dim Sum!</div>
-            </div>
+        <!-- SCENE 1: CAFE (Zoom In) -->
+        <!-- REPLACE 'url(...)' WITH YOUR IMAGE LINK -->
+        <div class="scene" id="scene1" style="background-image: url('https://images.unsplash.com/photo-1521017432531-fbd92d768814?q=80&w=1600');">
+            <div class="subtitle">☕ Cozy Brunch in Taipei</div>
         </div>
 
-        <!-- SCENE 3: NIGHT MARKET -->
-        <div class="slide" id="slide3">
-            <img src="https://images.unsplash.com/photo-1552053831-71594a27632d?q=80&w=1000&auto=format&fit=crop" alt="Night Market">
-            <div class="subtitle-box">
-                <div class="subtitle-text">Fried Chicken & Bubble Tea</div>
-            </div>
+        <!-- SCENE 2: DIN TAI FUNG (Pan) -->
+        <div class="scene" id="scene2" style="background-image: url('https://images.unsplash.com/photo-1496116218417-1a781b1c423c?q=80&w=1600');">
+            <div class="subtitle">🥟 Eating Delicious Dim Sum!</div>
         </div>
 
-        <!-- SCENE 4: HAPPY COUPLE (Using a color placeholder for now) -->
-        <div class="slide" id="slide4">
-            <!-- This is where you put your Anime Couple Image -->
-            <div style="width:100%; height:100%; background-color: #00c9a7; display:flex; justify-content:center; align-items:center;">
-                <h1 style="color:white; font-size:50px;">❤️</h1>
-            </div>
-            <div class="subtitle-box">
-                <div class="subtitle-text">So Happy Travelling Together</div>
-            </div>
+        <!-- SCENE 3: NIGHT MARKET (Zoom Out) -->
+        <div class="scene" id="scene3" style="background-image: url('https://images.unsplash.com/photo-1534450539339-6d1c87b1c03e?q=80&w=1600');">
+            <div class="subtitle">🌃 Night Market Adventures</div>
         </div>
 
-        <div class="progress-bar" id="progress"></div>
+        <!-- SCENE 4: COUPLE (Zoom In + Hearts) -->
+        <div class="scene" id="scene4" style="background-image: url('https://images.unsplash.com/photo-1516575334481-f85287c2c81d?q=80&w=1600');">
+            <div class="subtitle">❤️ So happy travelling with you</div>
+        </div>
     </div>
 
     <script>
-        const slides = document.querySelectorAll('.slide');
-        const progressBar = document.getElementById('progress');
-        let currentSlide = 0;
-        const slideInterval = 4000; // 4 seconds per scene
+        const scenes = [
+            { id: 'scene1', anim: 'animate-zoom-in', duration: 5000 },
+            { id: 'scene2', anim: 'animate-pan', duration: 5000 },
+            { id: 'scene3', anim: 'animate-zoom-out', duration: 5000 },
+            { id: 'scene4', anim: 'animate-zoom-in', duration: 6000, hearts: true }
+        ];
 
-        function nextSlide() {
-            // Remove active class from current slide
-            slides[currentSlide].classList.remove('active');
-            
-            // Calculate next slide index
-            currentSlide = (currentSlide + 1) % slides.length;
-            
-            // Add active class to next slide
-            slides[currentSlide].classList.add('active');
+        let currentIndex = 0;
 
-            // Reset progress bar logic (visual only)
-            progressBar.style.width = '0%';
-            setTimeout(() => {
-                progressBar.style.width = '100%';
-            }, 100);
+        function playScene() {
+            // Get current scene data
+            const data = scenes[currentIndex];
+            const el = document.getElementById(data.id);
+
+            // Reset all scenes
+            document.querySelectorAll('.scene').forEach(s => {
+                s.classList.remove('active');
+                s.classList.remove('animate-zoom-in');
+                s.classList.remove('animate-pan');
+                s.classList.remove('animate-zoom-out');
+            });
+
+            // Activate current scene
+            el.classList.add('active');
+            el.classList.add(data.anim);
+
+            // If it's the love scene, spawn hearts!
+            if (data.hearts) {
+                spawnHearts();
+            }
+
+            // Schedule next scene
+            currentIndex = (currentIndex + 1) % scenes.length;
+            setTimeout(playScene, data.duration);
         }
 
-        // Start the loop
-        setInterval(nextSlide, slideInterval);
-        
-        // Initial progress bar start
-        setTimeout(() => {
-            progressBar.style.width = '100%';
-        }, 100);
-    </script>
+        // Heart Animation Generator
+        function spawnHearts() {
+            let interval = setInterval(() => {
+                if(currentIndex !== 0) { // Stop if scene changed (index wrapped to 0)
+                    clearInterval(interval); 
+                    return;
+                }
+                const heart = document.createElement('div');
+                heart.classList.add('heart');
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + 'vw';
+                heart.style.animationDuration = (Math.random() * 2 + 2) + 's';
+                document.getElementById('movie-screen').appendChild(heart);
 
+                // Clean up heart after animation
+                setTimeout(() => { heart.remove(); }, 4000);
+            }, 300);
+        }
+
+        // Start the Movie
+        playScene();
+    </script>
 </body>
 </html>
